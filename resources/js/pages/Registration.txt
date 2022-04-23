@@ -1,0 +1,189 @@
+<template>
+
+<div id="app" class="pa-15">
+  <v-card
+
+class=" pa-5 mx-auto"
+  elevation="6"
+  outlined
+  shaped
+  width="500"
+>
+ <v-card-text class="mb-0 ">
+      
+      <p class="text-h6 text--primary text-center ">
+       Sign Up
+      </p>
+    
+    </v-card-text>
+   <validation-observer
+    ref="observer"
+    v-slot="{ invalid }"
+  >
+    <form @submit.prevent="submit" >
+      <validation-provider
+        v-slot="{ errors }"
+        name="Name"
+        rules="required|max:10"
+      >
+        <v-text-field
+        clearable
+          v-model="name"
+        
+          :counter="20"
+          :error-messages="errors"
+          label="Name"
+          required
+        ></v-text-field>
+      </validation-provider>
+    
+      <validation-provider
+        v-slot="{ errors }"
+        name="email"
+        rules="required|email"
+      >
+        <v-text-field
+          v-model="email"
+          :error-messages="errors"
+          label="E-mail"
+          required
+        ></v-text-field>
+      </validation-provider>
+     
+      <!-- <validation-provider
+        v-slot="{ errors }"
+        rules="required"
+        name="checkbox"
+      >
+        <v-checkbox
+          v-model="checkbox"
+          :error-messages="errors"
+          value="1"
+          label="Option"
+          type="checkbox"
+          required
+        ></v-checkbox>
+      </validation-provider> -->
+
+      <v-btn
+        class="mr-4"
+        type="submit"
+        :disabled="invalid"
+      >
+        submit
+      </v-btn>
+      <v-btn @click="clear">
+        clear
+      </v-btn>
+    </form>
+  </validation-observer>
+   <div class="text--primary mt-3">
+      <p>  Already have an account ?<router-link @click.native="Login" to="/Login"> Sign In</router-link> </p>
+      </div>
+
+      {{name}}
+      {{email}}
+  </v-card>
+</div>
+
+
+
+
+</template>
+
+<script>
+  import { required, digits, email, max, regex } from 'vee-validate/dist/rules'
+  import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+
+  setInteractionMode('eager')
+
+  extend('digits', {
+    ...digits,
+    message: '{_field_} needs to be {length} digits. ({_value_})',
+  })
+
+  extend('required', {
+    ...required,
+    message: '{_field_} can not be empty',
+  })
+
+  extend('max', {
+    ...max,
+    message: '{_field_} may not be greater than {length} characters',
+  })
+
+  extend('regex', {
+    ...regex,
+    message: '{_field_} {_value_} does not match {regex}',
+  })
+
+  extend('email', {
+    ...email,
+    message: 'Email must be valid',
+  })
+
+  export default {
+    components: {
+      ValidationProvider,
+      ValidationObserver,
+    },
+    data () {
+    return {
+      name: '',
+      email: '',
+     
+    }
+  },
+
+    methods: {
+     async  submit () {
+        this.$refs.observer.validate();
+
+        alert(this.name);
+
+      //   let data = {name : this.name, email:this.email}
+      //   // axios.post('http://localhost:8000/api/user', data).then((response) => {
+      //   //   console.log(response);
+      //   // }).catch((err) => {
+      //   //   console.log(err);
+      //   // });
+
+      //   //this.$refs.form.submit();
+      //  // console.log(this.$refs.form.$el);
+      //  this.data.post('http://localhost:8000/api/user');
+
+    
+  // POST request using fetch with async/await
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: this.name, email:this.email })
+  };
+  const response =  await fetch("http://localhost:8000/api/shipschedule", requestOptions);
+  const data = await response.json();
+  //this.postId = data.id;
+ alert(data.name);
+ console.log(data);
+
+
+
+      },
+      mounted() {
+        console.log('Component mounted')
+      },
+      clear () {
+        this.name = ''
+        this.phoneNumber = ''
+        this.email = ''
+        this.select = null
+        this.checkbox = null
+        this.$refs.observer.reset()
+      },
+    },
+  }
+</script>
+
+<style scoped>
+
+</style>
+
